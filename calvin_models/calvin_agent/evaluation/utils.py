@@ -18,6 +18,17 @@ import torch
 
 logger = logging.getLogger(__name__)
 
+ROBOT_POSITIONS = {
+    "slider_left": 
+    "slider_right": 
+    "drawer_open":
+    "drawer_close":
+    "lightbulb_on":
+    "lightbulb_off":
+    "led_on":
+    "led_off":
+}
+
 
 def get_default_model_and_env(train_folder, dataset_path, checkpoint, env=None, device_id=0):
     train_cfg_path = Path(train_folder) / ".hydra/config.yaml"
@@ -203,7 +214,7 @@ def temp_seed(seed):
         np.random.set_state(state)
 
 
-def get_env_state_for_initial_condition(initial_condition):
+def get_env_state_for_initial_condition(initial_condition, push_distance=[0.0, 0.0, 0.0], randomize: bool = True):
     robot_obs = np.array(
         [
             0.02586889,
@@ -227,13 +238,13 @@ def get_env_state_for_initial_condition(initial_condition):
     block_slider_left = np.array([-2.40851662e-01, 9.24044687e-02, 4.60990009e-01])
     block_slider_right = np.array([7.03416330e-02, 9.24044687e-02, 4.60990009e-01])
     block_table = [
-        np.array([5.00000896e-02, -1.20000177e-01, 4.59990009e-01]),
+        np.array([5.00000896e-02, -1.20000177e-01, 4.59990009e-01]) + np.array(push_distance),
         np.array([2.29995412e-01, -1.19995140e-01, 4.59990010e-01]),
     ]
     # we want to have a "deterministic" random seed for each initial condition
-    seed = fnvhash.fnv1_32(str(initial_condition.values()))
-    with temp_seed(seed):
-        np.random.shuffle(block_table)
+    with temp_seed(4):
+        if randomize:
+            np.random.shuffle(block_table)
 
         scene_obs = np.zeros(24)
         if initial_condition["slider"] == "left":
@@ -251,7 +262,10 @@ def get_env_state_for_initial_condition(initial_condition):
             scene_obs[6:9] = block_slider_left
         else:
             scene_obs[6:9] = block_table[0]
-        scene_obs[11] = np.random.uniform(*block_rot_z_range)
+        if randomize:
+            scene_obs[11] = np.random.uniform(*block_rot_z_range)
+        else:
+            scene_obs[11] = 1.57
         # blue block
         if initial_condition["blue_block"] == "slider_right":
             scene_obs[12:15] = block_slider_right
@@ -261,14 +275,22 @@ def get_env_state_for_initial_condition(initial_condition):
             scene_obs[12:15] = block_table[1]
         else:
             scene_obs[12:15] = block_table[0]
-        scene_obs[17] = np.random.uniform(*block_rot_z_range)
+        if randomize:
+            scene_obs[17] = np.random.uniform(*block_rot_z_range)
+        else:
+            scene_obs[17] = 0.0
         # pink block
         if initial_condition["pink_block"] == "slider_right":
             scene_obs[18:21] = block_slider_right
         elif initial_condition["pink_block"] == "slider_left":
             scene_obs[18:21] = block_slider_left
-        else:
+        elif initial_condition["red_block"] == "table" or initial_condition["blue_block"] == "table":
             scene_obs[18:21] = block_table[1]
-        scene_obs[23] = np.random.uniform(*block_rot_z_range)
+        else:
+            scene_obs[18:21] = block_table[0]
+        if randomize:
+            scene_obs[23] = np.random.uniform(*block_rot_z_range)
+        else:
+            scene_obs[23] = 1.57
 
     return robot_obs, scene_obs
