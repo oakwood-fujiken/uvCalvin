@@ -104,9 +104,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
-env/
 venv/
-ENV/
 env.bak/
 venv.bak/
 
@@ -140,7 +138,6 @@ dataset/task_ABC_D/*
 .idea/*
 
 # Ignore venv created as part of installation instructions
-calvin_venv/*
 
 # Ignore datasets as downloaded according to instructions
 dataset/*
