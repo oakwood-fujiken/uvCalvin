@@ -1,0 +1,31 @@
+# CALVIN-MetaSim default configuration.
+#
+# Override the backend by setting `metasim.backend`:
+#   python train.py metasim.backend=mujoco
+#   python train.py metasim.backend=isaac_lab
+#   python train.py metasim.backend=genesis
+#   python train.py metasim.backend=sapien
+#
+# Supported backends:
+#   pybullet   - CALVIN's original PyBullet backend (default)
+#   mujoco     - MuJoCo (DeepMind)
+#   isaac_lab  - NVIDIA Isaac Lab (GPU-accelerated, formerly Orbit)
+#   isaac_sim  - NVIDIA Isaac Sim (Omniverse)
+#   genesis    - Genesis (GPU-accelerated differentiable simulation)
+#   sapien     - SAPIEN (PhysX5 + ray-traced rendering)
+
+metasim:
+  backend: pybullet
+  obs_type: all
+  show_gui: false
+  seed: 0
+
+  # Backend-specific options (passed as **kwargs to handler constructors)
+  handler_kwargs:
+    # PyBullet
+    use_egl: true
+
+    # MuJoCo / Isaac Lab / Isaac Sim / Genesis / SAPIEN
+    # device: "cuda:0"
+    # headless: true
+    # num_envs: 1   # Isaac Lab only
