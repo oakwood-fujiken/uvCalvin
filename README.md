@@ -32,6 +32,20 @@ $ uv pip install -e calvin_env/tacto
 $ uv pip install -e calvin_env
 $ uv pip install -e calvin_models
 ```
+
+To use the multi-simulator support (optional), install a backend of your choice:
+```bash
+# MuJoCo
+$ pip install mujoco
+
+# Genesis
+$ pip install genesis-world
+
+# SAPIEN
+$ pip install sapien
+
+# Isaac Lab / Isaac Sim — see NVIDIA documentation for installation
+```
 If you encounter problems installing pyhash, you might have to downgrade setuptools to a version below 58.
 
 Download dataset (choose which split you want to download with the argument `D`, `ABC` or `ABCD`): \
@@ -292,6 +306,95 @@ Hongkuan Zhou, Zhenshan Bing, Xiangtong Yao, Xiaojie Su, Chenguang Yang, Kai Hua
 <a href="https://arxiv.org/pdf/2305.19075.pdf"> Paper</a>, <a href="https://github.com/hk-zh/spil"> Code
 
 Contact [Oier](https://www.oiermees.com/) to add your model here.
+
+## :rocket: Multi-Simulator Support (MetaSim Integration)
+
+CALVIN now supports running on multiple physics simulators via the `calvin_metasim` integration layer.
+This enables GPU-accelerated training, differentiable physics, and compatibility with modern simulation frameworks.
+
+### Supported Backends
+
+| Backend | Description | GPU Accel | Install |
+|---------|-------------|-----------|---------|
+| **PyBullet** | CALVIN's original backend (default) | CPU/EGL | `pip install pybullet` |
+| **MuJoCo** | DeepMind's physics engine | CPU/GPU | `pip install mujoco` |
+| **Isaac Lab** | NVIDIA GPU-accelerated (formerly Orbit) | GPU | [Isaac Lab docs](https://isaac-sim.github.io/IsaacLab/) |
+| **Isaac Sim** | NVIDIA Omniverse-based | GPU | [Isaac Sim docs](https://developer.nvidia.com/isaac-sim) |
+| **Genesis** | GPU-accelerated differentiable simulation | GPU | `pip install genesis-world` |
+| **SAPIEN** | PhysX5 + ray-traced rendering | GPU | `pip install sapien` |
+
+### Quick Start
+
+```python
+from calvin_metasim import make_calvin_env
+
+# Use PyBullet (default, fully compatible with original CALVIN)
+env = make_calvin_env(hydra_cfg=cfg, backend="pybullet")
+
+# Switch to MuJoCo
+env = make_calvin_env(hydra_cfg=cfg, backend="mujoco")
+
+# Use NVIDIA Isaac Lab for GPU-accelerated training
+env = make_calvin_env(hydra_cfg=cfg, backend="isaac_lab", device="cuda:0")
+
+# Use Genesis for differentiable simulation
+env = make_calvin_env(hydra_cfg=cfg, backend="genesis", device="cuda:0")
+
+# Use SAPIEN with ray-traced rendering
+env = make_calvin_env(hydra_cfg=cfg, backend="sapien")
+```
+
+The environment is a drop-in replacement for the original `PlayTableSimEnv`:
+```python
+obs = env.reset()
+obs, reward, done, info = env.step(action)  # 7D relative action
+
+# Access CALVIN-compatible attributes
+robot_obs = obs["robot_obs"]   # shape (15,)
+scene_obs = obs["scene_obs"]   # shape (24,)
+rgb_static = obs["rgb_obs"]["rgb_static"]  # shape (200, 200, 3)
+```
+
+### Hydra Configuration
+
+Override the backend via Hydra when running training or evaluation:
+```bash
+# Train with MuJoCo backend
+python training.py metasim.backend=mujoco
+
+# Train with Isaac Lab on GPU
+python training.py metasim.backend=isaac_lab metasim.handler_kwargs.device=cuda:0
+
+# Evaluate with Genesis
+python evaluation/evaluate_policy.py metasim.backend=genesis
+```
+
+### Architecture
+
+```
+calvin_metasim/
+  cfg/            # Configuration dataclasses (CalvinScenarioCfg)
+  env/
+    handler.py              # SimHandler ABC (abstract interface)
+    pybullet_handler.py     # PyBullet backend
+    mujoco_handler.py       # MuJoCo backend
+    isaac_lab_handler.py    # Isaac Lab backend
+    isaac_sim_handler.py    # Isaac Sim backend
+    genesis_handler.py      # Genesis backend
+    sapien_handler.py       # SAPIEN backend
+    calvin_metasim_env.py   # Main Gym environment
+    observation_adapter.py  # CALVIN-format observation builder
+    action_adapter.py       # Action translation + IK
+  scene/
+    interactive_objects.py  # Sim-agnostic Button/Switch/Light/Door
+    calvin_scene_builder.py # URDF loading & scene construction
+  wrappers/
+    calvin_compat_wrapper.py  # PlayTableSimEnv drop-in wrapper
+  assets/
+    asset_utils.py          # URDF discovery & conversion
+  conf/
+    metasim.yaml            # Default Hydra config
+```
 
 ## Reinforcement Learning with CALVIN
 Are you interested in trying  reinforcement learning agents for the different manipulation tasks in the CALVIN environment?
