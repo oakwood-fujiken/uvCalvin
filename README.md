@@ -411,23 +411,32 @@ CALVIN includes objects from [robosuite](https://robosuite.ai/)'s **NutAssembly*
 
 URDF files are located in `calvin_env/data/nutassembly/`.
 
-### How to Use
+### Scene Configurations
 
-Use the pre-configured scene that includes NutAssembly objects alongside the standard CALVIN blocks:
+Three pre-configured scenes are available. All scenes keep the standard CALVIN objects (blocks, table with drawer/slider/button/switch).
+
+| Scene Config | Description |
+|-------------|-------------|
+| `calvin_scene_nutassembly` | Both round and square nut/peg |
+| `calvin_scene_nutassembly_round` | Round nut + round peg only |
+| `calvin_scene_nutassembly_square` | Square nut + square peg only |
 
 ```bash
-# Train with NutAssembly scene
+# Both nut/peg pairs
 python training.py scene=calvin_scene_nutassembly
 
-# Evaluate with NutAssembly scene
-python evaluation/evaluate_policy.py --dataset_path <PATH> scene=calvin_scene_nutassembly
+# Round nut/peg only
+python training.py scene=calvin_scene_nutassembly_round
+
+# Square nut/peg only
+python training.py scene=calvin_scene_nutassembly_square
 ```
 
-The scene config file is at `calvin_env/conf/scene/calvin_scene_nutassembly.yaml`.
+Scene config files are located in `calvin_env/conf/scene/`.
 
-In this scene:
-- **Nuts** (`round_nut`, `square_nut`) spawn at random positions on the table surface (movable objects).
-- **Pegs** (`round_peg`, `square_peg`) are placed at fixed positions on the table (fixed objects with zero mass).
+In these scenes:
+- **Nuts** spawn at random positions on the table surface (movable objects).
+- **Pegs** are placed at fixed positions on the table (fixed objects with zero mass).
 - The standard CALVIN objects (blocks, table with drawer/slider/button/switch) are also included.
 
 ### Adding NutAssembly Objects to a Custom Scene
