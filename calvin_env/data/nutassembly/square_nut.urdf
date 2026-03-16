@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!-- Square nut from robosuite NutAssembly task.
+     A square-shaped nut with a handle, made of brass-like material. -->
+<robot name="square_nut">
+  <link name="base_link">
+    <contact>
+      <lateral_friction value="0.95"/>
+      <spinning_friction value="0.001"/>
+    </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <!-- Square side: -X -->
+    <visual>
+      <origin rpy="0 0 0" xyz="-0.03325 0 0"/>
+      <geometry>
+        <box size="0.021 0.0875 0.02"/>
+      </geometry>
+      <material name="brass">
+        <color rgba="0.8 0.6 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0.03325 0 0"/>
+      <geometry>
+        <box size="0.021 0.0875 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Square side: +X -->
+  <link name="side_px">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.0875 0.02"/>
+      </geometry>
+      <material name="brass">
+        <color rgba="0.8 0.6 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.0875 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="side_px_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="side_px"/>
+    <origin xyz="0.03325 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Square side: +Y -->
+  <link name="side_py">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0625 0.021 0.02"/>
+      </geometry>
+      <material name="brass">
+        <color rgba="0.8 0.6 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0625 0.021 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="side_py_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="side_py"/>
+    <origin xyz="0 0.03325 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Square side: -Y -->
+  <link name="side_ny">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0625 0.021 0.02"/>
+      </geometry>
+      <material name="brass">
+        <color rgba="0.8 0.6 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0625 0.021 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="side_ny_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="side_ny"/>
+    <origin xyz="0 -0.03325 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Handle -->
+  <link name="handle">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0505 0.03175 0.02"/>
+      </geometry>
+      <material name="brass">
+        <color rgba="0.8 0.6 0.2 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.0505 0.03175 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="handle_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="handle"/>
+    <origin xyz="0.054 0 0" rpy="0 0 0"/>
+  </joint>
+</robot>

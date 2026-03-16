@@ -396,6 +396,66 @@ calvin_metasim/
     metasim.yaml            # Default Hydra config
 ```
 
+## :wrench: NutAssembly Objects (from robosuite)
+
+CALVIN includes objects from [robosuite](https://robosuite.ai/)'s **NutAssembly** task. These objects allow you to set up nut-and-peg assembly manipulation tasks within the CALVIN environment.
+
+### Available Objects
+
+| Object | Type | Description | Color |
+|--------|------|-------------|-------|
+| `round_nut` | Movable | Ring-shaped nut with a handle | Silver (steel) |
+| `square_nut` | Movable | Square-shaped nut with a handle | Gold (brass) |
+| `round_peg` | Fixed | Cylindrical peg on a base plate | Brown/Gray |
+| `square_peg` | Fixed | Square peg on a base plate | Brown/Gray |
+
+URDF files are located in `calvin_env/data/nutassembly/`.
+
+### How to Use
+
+Use the pre-configured scene that includes NutAssembly objects alongside the standard CALVIN blocks:
+
+```bash
+# Train with NutAssembly scene
+python training.py scene=calvin_scene_nutassembly
+
+# Evaluate with NutAssembly scene
+python evaluation/evaluate_policy.py --dataset_path <PATH> scene=calvin_scene_nutassembly
+```
+
+The scene config file is at `calvin_env/conf/scene/calvin_scene_nutassembly.yaml`.
+
+In this scene:
+- **Nuts** (`round_nut`, `square_nut`) spawn at random positions on the table surface (movable objects).
+- **Pegs** (`round_peg`, `square_peg`) are placed at fixed positions on the table (fixed objects with zero mass).
+- The standard CALVIN objects (blocks, table with drawer/slider/button/switch) are also included.
+
+### Adding NutAssembly Objects to a Custom Scene
+
+You can add individual NutAssembly objects to any scene config YAML:
+
+```yaml
+objects:
+  fixed_objects:
+    round_peg:
+      file: nutassembly/round_peg.urdf
+      initial_pos: [0.1, -0.1, 0.46]  # on table surface
+      initial_orn: [0, 0, 0]
+    square_peg:
+      file: nutassembly/square_peg.urdf
+      initial_pos: [0.25, -0.1, 0.46]
+      initial_orn: [0, 0, 0]
+  movable_objects:
+    round_nut:
+      file: nutassembly/round_nut.urdf
+      initial_pos: any    # random position on a surface
+      initial_orn: any    # random orientation
+    square_nut:
+      file: nutassembly/square_nut.urdf
+      initial_pos: any
+      initial_orn: any
+```
+
 ## Reinforcement Learning with CALVIN
 Are you interested in trying  reinforcement learning agents for the different manipulation tasks in the CALVIN environment?
 We provide a [google colab](https://github.com/mees/calvin/blob/main/RL_with_CALVIN.ipynb) to showcase how to leverage the CALVIN task indicators to learn RL agents with a sparse reward.
