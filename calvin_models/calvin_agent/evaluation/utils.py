@@ -18,16 +18,16 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-ROBOT_POSITIONS = {
-    "slider_left": 
-    "slider_right": 
-    "drawer_open":
-    "drawer_close":
-    "lightbulb_on":
-    "lightbulb_off":
-    "led_on":
-    "led_off":
-}
+# ROBOT_POSITIONS = {
+#     "slider_left": 
+#     "slider_right": 
+#     "drawer_open":
+#     "drawer_close":
+#     "lightbulb_on":
+#     "lightbulb_off":
+#     "led_on":
+#     "led_off":
+# }
 
 
 def get_default_model_and_env(train_folder, dataset_path, checkpoint, env=None, device_id=0):
